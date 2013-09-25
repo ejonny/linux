@@ -679,6 +679,17 @@ config ARCH_DAVINCI
 	help
 	  Support for TI's DaVinci platform.
 
+config ARCH_KA2000
+	bool "KeyAsic KA2000EVM"
+	select CPU_ARM926T
+	select ARCH_HAS_CPUFREQ
+	select GENERIC_TIME
+	select GENERIC_CLOCKEVENTS
+	select HAVE_CLK
+	select ZONE_DMA	
+	help
+	  Support for KeyAsic's KA2000 platform.
+
 config ARCH_OMAP
 	bool "TI OMAP"
 	select GENERIC_GPIO
@@ -746,6 +757,8 @@ source "arch/arm/mach-omap2/Kconfig"
 source "arch/arm/mach-orion5x/Kconfig"
 
 source "arch/arm/mach-kirkwood/Kconfig"
+
+source "arch/arm/mach-ka2000/Kconfig"
 
 source "arch/arm/plat-s3c24xx/Kconfig"
 source "arch/arm/plat-s3c64xx/Kconfig"
@@ -1158,7 +1171,7 @@ config LEDS
 		   ARCH_LUBBOCK || MACH_MAINSTONE || ARCH_NETWINDER || \
 		   ARCH_OMAP || ARCH_P720T || ARCH_PXA_IDP || \
 		   ARCH_SA1100 || ARCH_SHARK || ARCH_VERSATILE || \
-		   ARCH_AT91 || ARCH_DAVINCI || \
+		   ARCH_AT91 || ARCH_DAVINCI || ARCH_KA2000 || \
 		   ARCH_KS8695 || MACH_RD88F5182 || ARCH_REALVIEW
 	help
 	  If you say Y here, the LEDs on your machine will be used
