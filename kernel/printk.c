@@ -36,6 +36,10 @@
 
 #include <asm/uaccess.h>
 
+#ifndef CONFIG_KA2000_PRINTK_ENABLE
+#define KA2000_DISABLE_PRINTK
+#endif
+
 /*
  * for_each_console() allows you to iterate on each console
  */
@@ -588,6 +592,7 @@ static int have_callable_console(void)
 
 asmlinkage int printk(const char *fmt, ...)
 {
+#ifndef KA2000_DISABLE_PRINTK
 	va_list args;
 	int r;
 
