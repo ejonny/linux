@@ -424,9 +424,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned len)
 	const char *compress_name;
 	static __initdata char msg_buf[64];
 
-	header_buf = kmalloc(110, GFP_KERNEL);
-	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
-	name_buf = kmalloc(N_ALIGN(PATH_MAX), GFP_KERNEL);
+#ifdef CONFIG_ARCH_KA2000
+	int irq_disable_here = 0;
+
+	//printk("unpack_to_rootfs buf %x, len %d, check_only %d\n", buf, len, check_only);
+	if (!irqs_disabled())
+	{
+		local_irq_disable();
+		irq_disable_here = 1;
+	}
+#endif
+
+	header_buf = kzalloc(110, GFP_KERNEL);
+	symlink_buf = kzalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
+	name_buf = kzalloc(N_ALIGN(PATH_MAX), GFP_KERNEL);
 
 	if (!header_buf || !symlink_buf || !name_buf)
 		panic("can't allocate buffers");
@@ -473,6 +484,11 @@ static char * __init unpack_to_rootfs(char *buf, unsigned len)
 	kfree(name_buf);
 	kfree(symlink_buf);
 	kfree(header_buf);
+#ifdef CONFIG_ARCH_KA2000
+	if (irq_disable_here)
+		local_irq_enable();
+#endif
+
 	return message;
 }
 
@@ -574,8 +590,14 @@ static void __init clean_rootfs(void)
 
 static int __init populate_rootfs(void)
 {
+#ifdef CONFIG_ARCH_KA2000
+	char *buf = (char *)initrd_start;
+	unsigned char *ubuf;
+	int len;
+#endif
 	char *err = unpack_to_rootfs(__initramfs_start,
 			 __initramfs_end - __initramfs_start);
+
 	if (err)
 		panic(err);	/* Failed to decompress INTERNAL initramfs */
 	if (initrd_start) {
@@ -603,8 +625,23 @@ static int __init populate_rootfs(void)
 		}
 #else
 		printk(KERN_INFO "Unpacking initramfs...\n");
+
+#ifdef CONFIG_ARCH_KA2000
+		if (buf[0] == 'K' && buf[1] == 'A' && buf[2] == 'G' && buf[3] == 'Z') {
+			/* Compatible with old. */
+			ubuf = (unsigned char *)buf + 4;
+			len = (ubuf[0] << 24) | (ubuf[1] << 16) | (ubuf[2] << 8) | (ubuf[3] << 0);
+			buf += 8;
+			printk("KA2000 unpack_to_rootfs %x size %x\n", (unsigned int)buf, len);
+			err = unpack_to_rootfs(buf, len);
+		} else {
+			err = unpack_to_rootfs((char *)initrd_start,
+				initrd_end - initrd_start);
+		}
+#else
 		err = unpack_to_rootfs((char *)initrd_start,
 			initrd_end - initrd_start);
+#endif /* CONFIG_ARCH_KA2000 */
 		if (err)
 			printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
 		free_initrd();
