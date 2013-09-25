@@ -2190,31 +2190,31 @@ static noinline struct module *load_module(void __user *umod,
 	sechdrs[versindex].sh_flags &= ~(unsigned long)SHF_ALLOC;
 
 	/* Check module struct version now, before we try to use module. */
-	if (!check_modstruct_version(sechdrs, versindex, mod)) {
-		err = -ENOEXEC;
-		goto free_hdr;
-	}
+//	if (!check_modstruct_version(sechdrs, versindex, mod)) {
+//		err = -ENOEXEC;
+//		goto free_hdr;
+//	}
 
-	modmagic = get_modinfo(sechdrs, infoindex, "vermagic");
-	/* This is allowed: modprobe --force will invalidate it. */
-	if (!modmagic) {
-		err = try_to_force_load(mod, "bad vermagic");
-		if (err)
-			goto free_hdr;
-	} else if (!same_magic(modmagic, vermagic, versindex)) {
-		printk(KERN_ERR "%s: version magic '%s' should be '%s'\n",
-		       mod->name, modmagic, vermagic);
-		err = -ENOEXEC;
-		goto free_hdr;
-	}
+//	modmagic = get_modinfo(sechdrs, infoindex, "vermagic");
+//	/* This is allowed: modprobe --force will invalidate it. */
+//	if (!modmagic) {
+//		err = try_to_force_load(mod, "bad vermagic");
+//		if (err)
+//			goto free_hdr;
+//	} else if (!same_magic(modmagic, vermagic, versindex)) {
+//		printk(KERN_ERR "%s: version magic '%s' should be '%s'\n",
+//		       mod->name, modmagic, vermagic);
+//		err = -ENOEXEC;
+//		goto free_hdr;
+//	}
 
-	staging = get_modinfo(sechdrs, infoindex, "staging");
-	if (staging) {
-		add_taint_module(mod, TAINT_CRAP);
-		printk(KERN_WARNING "%s: module is from the staging directory,"
-		       " the quality is unknown, you have been warned.\n",
-		       mod->name);
-	}
+//	staging = get_modinfo(sechdrs, infoindex, "staging");
+//	if (staging) {
+//		add_taint_module(mod, TAINT_CRAP);
+//		printk(KERN_WARNING "%s: module is from the staging directory,"
+//		       " the quality is unknown, you have been warned.\n",
+//		       mod->name);
+//	}
 
 	/* Now copy in args */
 	args = strndup_user(uargs, ~0UL >> 1);
