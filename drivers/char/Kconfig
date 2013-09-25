@@ -987,6 +987,11 @@ config MWAVE
 	  To compile this driver as a module, choose M here: the
 	  module will be called mwave.
 
+config MOVTION_SENSOR
+	tristate "motion sensor support"
+	help
+	  Give userspace access to the motion sensor in KA2000 EVM
+
 config SCx200_GPIO
 	tristate "NatSemi SCx200 GPIO Support"
 	depends on SCx200
