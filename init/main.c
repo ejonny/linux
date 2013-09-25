@@ -80,6 +80,7 @@
 #ifdef CONFIG_X86_LOCAL_APIC
 #include <asm/smp.h>
 #endif
+#define UARTC(ch);	*(volatile u32 __force *) (0x55000000 + 0xa0004000) = (ch);
 
 static int kernel_init(void *);
 
