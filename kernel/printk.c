@@ -601,6 +601,11 @@ asmlinkage int printk(const char *fmt, ...)
 	va_end(args);
 
 	return r;
+#else
+    //mdelay(1);
+    //touch_nmi_watchdog();
+    return 0;
+#endif
 }
 
 /* cpu currently holding logbuf_lock */
@@ -713,8 +718,10 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	if (recursion_bug) {
 		recursion_bug = 0;
 		strcpy(printk_buf, recursion_bug_msg);
+		nop();
 		printed_len = strlen(recursion_bug_msg);
 	}
+	nop();
 	/* Emit the output into the temporary buffer */
 	printed_len += vscnprintf(printk_buf + printed_len,
 				  sizeof(printk_buf) - printed_len, fmt, args);
